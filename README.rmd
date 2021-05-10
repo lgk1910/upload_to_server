@@ -1,5 +1,7 @@
 ```
-python add_listing_to_database.py
+var add2 = function(number) {
+  return number + 2;
+}
 ```
 This will add listings from file 'listing_and_images.csv' to folder 'dataset' and 
 our main database 'main.db'
