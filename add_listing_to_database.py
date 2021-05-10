@@ -131,47 +131,50 @@ columns = listing_df.columns
 
 # Start adding new listing
 for id in range(len(listing_df)):
-  print("Adding listing " + listing_df.iloc[id][0] + "...")
-  # Check if listing existed
-  if os.path.isdir(f'dataset/{listing_df.iloc[id][0]}'):
-    print(f"Listing {listing_df.iloc[id][0]} has existed in database")
-    continue
-
-  input_URLs = []
-  for column in columns[1:]:
-    if pd.isnull(listing_df.iloc[id][column]):
-      break
-    input_URLs.append(listing_df.iloc[id][column])
-  print(input_URLs)
-  # break
-  # Check duplicate
-  if check_duplicate(input_URLs):
-    print("Duplicate listing detected. Adding fail.")
-  else:
-    print(f"New listing. Adding...")
-    try:
-      os.mkdir(f'dataset/{listing_df.iloc[id][0]}')
-      imgs = []
-      input_filenames = []
-      for i, URL in enumerate(input_URLs):
-        try:
-          response = requests.get(URL)
-          with open(f'dataset/{listing_df.iloc[id][0]}/img{i}.jpg', "wb") as f:
-              f.write(response.content)
-          img = cv2.imread(f'dataset/{listing_df.iloc[id][0]}/img{i}.jpg')
-          img = cv2.resize(img, (224, 224,))/255.0
-          imgs.append(img)
-          input_filenames.append(f'dataset/{listing_df.iloc[id][0]}/img{i}.jpg')
-        except:
-          pass
-      imgs = np.array(imgs)
-      features = effnet_feature_vec(imgs).numpy()
-      predictions = km.predict(features)
-      for i, input_filename in enumerate(input_filenames):
-        row = Table(file_path=input_filename, listing=listing_df.iloc[id][0], cluster_id=int(predictions[i]))
-        db.session.add(row)
-      db.session.commit()
-    except:
+  try:
+    print("Adding listing " + listing_df.iloc[id][0] + "...")
+    # Check if listing existed
+    if os.path.isdir(f'dataset/{listing_df.iloc[id][0]}'):
       print(f"Listing {listing_df.iloc[id][0]} has existed in database")
-    print("Adding successfully")
-  print("---------------------")
+      continue
+
+    input_URLs = []
+    for column in columns[1:]:
+      if pd.isnull(listing_df.iloc[id][column]):
+        break
+      input_URLs.append(listing_df.iloc[id][column])
+    print(input_URLs)
+    # break
+    # Check duplicate
+    if check_duplicate(input_URLs):
+      print("Duplicate listing detected. Adding fail.")
+    else:
+      print(f"New listing. Adding...")
+      try:
+        os.mkdir(f'dataset/{listing_df.iloc[id][0]}')
+        imgs = []
+        input_filenames = []
+        for i, URL in enumerate(input_URLs):
+          try:
+            response = requests.get(URL)
+            with open(f'dataset/{listing_df.iloc[id][0]}/img{i}.jpg', "wb") as f:
+                f.write(response.content)
+            img = cv2.imread(f'dataset/{listing_df.iloc[id][0]}/img{i}.jpg')
+            img = cv2.resize(img, (224, 224,))/255.0
+            imgs.append(img)
+            input_filenames.append(f'dataset/{listing_df.iloc[id][0]}/img{i}.jpg')
+          except:
+            pass
+        imgs = np.array(imgs)
+        features = effnet_feature_vec(imgs).numpy()
+        predictions = km.predict(features)
+        for i, input_filename in enumerate(input_filenames):
+          row = Table(file_path=input_filename, listing=listing_df.iloc[id][0], cluster_id=int(predictions[i]))
+          db.session.add(row)
+        db.session.commit()
+      except:
+        print(f"Listing {listing_df.iloc[id][0]} has existed in database")
+      print("Adding successfully")
+    print("---------------------")
+  except:
+    pass
