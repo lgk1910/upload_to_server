@@ -79,17 +79,20 @@ def check_duplicate(URLs):
   img = []
   pairs = []
   for index in range(len(merge_df)):
-    if index > 0:
-      if merge_df.iloc[index]['input_filename'] != merge_df.iloc[index-1]['input_filename']:
+    try:
+      if index > 0:
+        if merge_df.iloc[index]['input_filename'] != merge_df.iloc[index-1]['input_filename']:
+          img = cv2.imread(merge_df.iloc[index]['input_filename'])
+          img = cv2.resize(img, (224, 224))/255.0
+      else:
         img = cv2.imread(merge_df.iloc[index]['input_filename'])
         img = cv2.resize(img, (224, 224))/255.0
-    else:
-      img = cv2.imread(merge_df.iloc[index]['input_filename'])
-      img = cv2.resize(img, (224, 224))/255.0
-    matching_img = cv2.imread(merge_df.iloc[index]['file_path'])
-    matching_img = cv2.resize(matching_img, (224, 224))/255.0
-    pair = np.vstack((img, matching_img))
-    pairs.append(pair.tolist())
+      matching_img = cv2.imread(merge_df.iloc[index]['file_path'])
+      matching_img = cv2.resize(matching_img, (224, 224))/255.0
+      pair = np.vstack((img, matching_img))
+      pairs.append(pair.tolist())
+    except:
+      merge_df = merge_df.drop(labels=index, axis=0)
   pairs = np.array(pairs)
   certainties = model(pairs)
   merge_df['certainty'] = certainties[:, 1]
