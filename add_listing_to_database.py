@@ -92,7 +92,8 @@ def check_duplicate(URLs):
       pair = np.vstack((img, matching_img))
       pairs.append(pair.tolist())
     except:
-      merge_df = merge_df.drop(labels=index, axis=0)
+      # merge_df = merge_df.drop(labels=index, axis=0)
+      pass
   pairs = np.array(pairs)
   certainties = model(pairs)
   merge_df['certainty'] = certainties[:, 1]
