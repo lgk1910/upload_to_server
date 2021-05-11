@@ -28,7 +28,9 @@ class Model:
 											trainable=False)
 		])
 		self.effnet_feature_vec.build([None, 224, 224, 3])  # Batch input shape.
-		self.model = tf.keras.models.load_model('infused_model_4k7.h5', custom_objects={'KerasLayer': hub.KerasLayer})
+		# self.model = tf.keras.models.load_model('infused_model_4k7.h5', custom_objects={'KerasLayer': hub.KerasLayer})
+		self.model = tf.keras.models.load_model('infused_model_4k7.h5')
+
 
 		self.threshold = 0.99
 		
