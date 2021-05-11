@@ -7,6 +7,9 @@ import time
 import requests
 import numpy as np
 
+from flask_ngrok import run_with_ngrok
+from flask_cors import CORS
+
 try:
 	os.mkdir('dataset')
 	print("Directory dataset created")
@@ -20,6 +23,8 @@ except:
 	pass
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///main.db'
+run_with_ngrok(app)
+CORS(app)
 db = SQLAlchemy(app)
 
 class Table(db.Model):
