@@ -153,4 +153,4 @@ def check():
 
 if __name__ == '__main__':
 	trained_model = Model()
-	app.run(debug=True)
+	app.run()
